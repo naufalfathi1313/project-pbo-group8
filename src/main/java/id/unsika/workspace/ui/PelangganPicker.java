@@ -21,6 +21,7 @@ class PelangganPicker extends JPanel {
 
     PelangganPicker() {
         super(new BorderLayout(6, 0));
+        setOpaque(false);
         JButton btnBaru = new JButton("+ Pelanggan Baru");
         btnBaru.addActionListener(e -> tambah());
         add(combo, BorderLayout.CENTER);

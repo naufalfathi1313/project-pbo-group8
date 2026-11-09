@@ -137,7 +137,7 @@
       <a class="btn primary" href="https://github.com/naufalfathi1313/project-pbo-group8/releases/latest">⬇ Download Aplikasi (.jar)</a>
       <a class="btn" href="https://github.com/naufalfathi1313/project-pbo-group8">Lihat Kode di GitHub</a>
     </div>
-    <div class="shot"><img src="img/1-Dashboard.webp" alt="Dashboard status fasilitas real-time" width="1280" height="760"></div>
+    <div class="shot"><img src="img/1-Dashboard.webp" alt="Dashboard status fasilitas real-time" width="1366" height="820"></div>
     <div class="badges">
       <span class="badge">Java 17+</span><span class="badge">Java Swing</span><span class="badge">MySQL</span>
       <span class="badge">JDBC</span><span class="badge">Maven</span><span class="badge">FlatLaf</span><span class="badge">JUnit 5</span>
@@ -150,11 +150,11 @@
     <div class="eyebrow">Fitur</div>
     <h2>Semua yang dibutuhkan kasir working space.</h2>
     <div class="grid">
-      <div class="card"><h3>Status real-time</h3><p>Dashboard kartu berwarna diperbarui otomatis setiap 2 detik, termasuk perubahan dari komputer kasir lain.</p></div>
+      <div class="card"><h3>Status real-time</h3><p>Dashboard kartu berwarna diperbarui otomatis setiap 3 detik, termasuk perubahan dari komputer kasir lain.</p></div>
       <div class="card"><h3>Grid jadwal per jam</h3><p>Pilih beberapa jam berurutan, lihat estimasi biaya, lalu konfirmasi booking. Slot bentrok otomatis ditolak.</p></div>
-      <div class="card"><h3>Timer durasi</h3><p>Durasi dan biaya berjalan tampil setiap detik. Saat selesai, biaya dihitung otomatis dan struk dicetak.</p></div>
+      <div class="card"><h3>Timer durasi</h3><p>Durasi dan biaya berjalan tampil setiap detik. Saat selesai, biaya dihitung otomatis dan struk ditampilkan.</p></div>
       <div class="card"><h3>Walk-in</h3><p>Pelanggan tanpa booking bisa langsung main, asalkan unitnya kosong dan tidak sedang dibooking.</p></div>
-      <div class="card"><h3>Rekap pendapatan</h3><p>Filter per periode dan jenis fasilitas, lengkap dengan total transaksi, total jam, dan pendapatan per jenis.</p></div>
+      <div class="card"><h3>Grafik rekap</h3><p>Grafik pendapatan per hari dan per jenis fasilitas, digambar sendiri dengan Java2D. Arahkan mouse ke batang untuk melihat angkanya.</p></div>
       <div class="card"><h3>Kelola data</h3><p>Tambah, ubah, dan hapus fasilitas serta pelanggan. Data yang punya riwayat transaksi terlindungi.</p></div>
     </div>
     <div class="grid">
@@ -169,17 +169,18 @@
 <section id="tampilan">
   <div class="wrap">
     <div class="eyebrow">Tampilan</div>
-    <h2>Tema gelap ala gaming.</h2>
+    <h2>Tema gelap, menu samping, grafik interaktif.</h2>
     <div class="tabs" role="tablist">
-      <button role="tab" aria-selected="true" data-img="img/2-Jadwal.webp" data-cap="Grid jadwal per jam: klik slot hijau, pilih pelanggan, lalu Konfirmasi Booking.">Jadwal & Booking</button>
-      <button role="tab" aria-selected="false" data-img="img/1-Dashboard.webp" data-cap="Dashboard: kartu tiap fasilitas berwarna sesuai statusnya saat ini.">Dashboard</button>
+      <button role="tab" aria-selected="true" data-img="img/5-Rekap.webp" data-cap="Rekap: angka ringkasan, grafik pendapatan per hari & per jenis, dan tabel detail.">Rekap</button>
+      <button role="tab" aria-selected="false" data-img="img/2-Jadwal.webp" data-cap="Grid jadwal per jam: klik slot, lihat estimasi biaya, lalu Konfirmasi Booking.">Jadwal & Booking</button>
+      <button role="tab" aria-selected="false" data-img="img/1-Dashboard.webp" data-cap="Dashboard: angka ringkasan dan kartu tiap fasilitas, lengkap dengan timer yang berjalan.">Dashboard</button>
       <button role="tab" aria-selected="false" data-img="img/4-Sesi_Aktif.webp" data-cap="Sesi Aktif: check-in booking, timer durasi, biaya berjalan, dan tombol Selesai & Bayar.">Sesi Aktif</button>
       <button role="tab" aria-selected="false" data-img="img/3-Walk-in.webp" data-cap="Walk-in: pelanggan langsung main tanpa booking.">Walk-in</button>
-      <button role="tab" aria-selected="false" data-img="img/5-Rekap.webp" data-cap="Rekap: transaksi selesai per periode dan total pendapatan.">Rekap</button>
+      <button role="tab" aria-selected="false" data-img="img/0-login.webp" data-cap="Halaman login.">Login</button>
       <button role="tab" aria-selected="false" data-img="img/6-Kelola_Data.webp" data-cap="Kelola Data: CRUD fasilitas dan pelanggan.">Kelola Data</button>
     </div>
-    <div class="shot"><img id="gallery-img" src="img/2-Jadwal.webp" alt="Tangkapan layar aplikasi" width="1280" height="760"></div>
-    <p class="caption" id="gallery-cap">Grid jadwal per jam: klik slot hijau, pilih pelanggan, lalu Konfirmasi Booking.</p>
+    <div class="shot"><img id="gallery-img" src="img/5-Rekap.webp" alt="Tangkapan layar aplikasi" width="1366" height="820"></div>
+    <p class="caption" id="gallery-cap">Rekap: angka ringkasan, grafik pendapatan per hari & per jenis, dan tabel detail.</p>
   </div>
 </section>
 

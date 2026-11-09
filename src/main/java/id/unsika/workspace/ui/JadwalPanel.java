@@ -46,7 +46,7 @@ public class JadwalPanel extends JPanel implements Refreshable {
 
     /** Status satu kotak di grid. Berbeda dengan StatusFasilitas karena terikat pada jam tertentu. */
     private enum StatusSlot {
-        TERSEDIA("Tersedia", Tema.HIJAU),
+        TERSEDIA("Tersedia", new Color(0x163A31)),   // hijau redup: kondisi normal tidak perlu mencolok
         DIPILIH("Dipilih", Tema.AKSEN),
         DIBOOKING("Dibooking", Tema.KUNING),
         DIPAKAI("Dipakai", Tema.MERAH),
@@ -82,7 +82,7 @@ public class JadwalPanel extends JPanel implements Refreshable {
 
     public JadwalPanel() {
         super(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setBorder(BorderFactory.createEmptyBorder(0, 24, 24, 24));
 
         spTanggal.setEditor(new JSpinner.DateEditor(spTanggal, "EEEE, dd/MM/yyyy"));
         spTanggal.addChangeListener(e -> {
@@ -108,7 +108,7 @@ public class JadwalPanel extends JPanel implements Refreshable {
             atas.add(kotakLegenda(s));
         }
 
-        JButton btnKonfirmasi = new JButton("Konfirmasi Booking");
+        JButton btnKonfirmasi = Tema.tombolUtama("Konfirmasi Booking");
         btnKonfirmasi.addActionListener(e -> konfirmasi());
         JButton btnReset = new JButton("Reset Pilihan");
         btnReset.addActionListener(e -> {
@@ -118,17 +118,21 @@ public class JadwalPanel extends JPanel implements Refreshable {
         lblRingkasan.setFont(lblRingkasan.getFont().deriveFont(Font.BOLD, 14f));
 
         JPanel aksi = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        aksi.setOpaque(false);
         aksi.add(new JLabel("Pelanggan"));
         aksi.add(pelangganPicker);
         aksi.add(btnReset);
         aksi.add(btnKonfirmasi);
 
-        JPanel bawah = new JPanel(new BorderLayout(0, 6));
+        Kartu bawah = new Kartu(new BorderLayout(0, 12));
         bawah.add(lblRingkasan, BorderLayout.NORTH);
-        bawah.add(aksi, BorderLayout.SOUTH);
+        bawah.add(aksi, BorderLayout.CENTER);
 
         add(atas, BorderLayout.NORTH);
-        add(new JScrollPane(grid), BorderLayout.CENTER);
+        JScrollPane gulir = new JScrollPane(grid);
+        gulir.setBorder(null);
+        gulir.getVerticalScrollBar().setUnitIncrement(16);
+        add(gulir, BorderLayout.CENTER);
         add(bawah, BorderLayout.SOUTH);
 
         refresh();
@@ -182,10 +186,10 @@ public class JadwalPanel extends JPanel implements Refreshable {
 
     private JLabel kotakSlot(Fasilitas f, int jam) {
         StatusSlot status = statusSlot(f, jam);
-        JLabel kotak = new JLabel(status.label, SwingConstants.CENTER);
-        kotak.setOpaque(true);
+        KotakSlot kotak = new KotakSlot(status.label, status == StatusSlot.TERSEDIA || status == StatusSlot.DIPILIH);
         kotak.setBackground(status.warna);
-        kotak.setForeground(status == StatusSlot.TUTUP ? Tema.TEKS_REDUP : Tema.teksDiAtas(status.warna));
+        kotak.setForeground(status == StatusSlot.TUTUP ? Tema.TEKS_SAMAR
+                : status == StatusSlot.TERSEDIA ? new Color(0x7FD8B0) : Tema.teksDiAtas(status.warna));
         kotak.setFont(kotak.getFont().deriveFont(11f));
         Pemesanan b = bookingDi(f, jam);
         if (b != null) {
@@ -321,11 +325,54 @@ public class JadwalPanel extends JPanel implements Refreshable {
         return l;
     }
 
-    private static JLabel kotakLegenda(StatusSlot s) {
-        JLabel l = new JLabel("  " + s.label + "  ");
-        l.setOpaque(true);
-        l.setBackground(s.warna);
-        l.setForeground(s == StatusSlot.TUTUP ? Tema.TEKS_REDUP : Tema.teksDiAtas(s.warna));
-        return l;
+    private static JPanel kotakLegenda(StatusSlot s) {
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        JLabel titik = new JLabel() {
+            @Override
+            protected void paintComponent(java.awt.Graphics g) {
+                g.setColor(s == StatusSlot.TUTUP ? Tema.GARIS : s == StatusSlot.TERSEDIA ? Tema.HIJAU : s.warna);
+                g.fillRoundRect(0, 3, 10, 10, 4, 4);
+            }
+        };
+        titik.setPreferredSize(new java.awt.Dimension(10, 16));
+        p.add(titik);
+        p.add(Tema.label(s.label, 12f, Font.PLAIN, Tema.TEKS_REDUP));
+        return p;
+    }
+
+    /** Satu kotak slot di grid: sudut bulat, sedikit lebih terang saat mouse di atasnya. */
+    private static class KotakSlot extends JLabel {
+
+        private boolean hover;
+
+        KotakSlot(String teks, boolean bisaDiklik) {
+            super(teks, SwingConstants.CENTER);
+            setPreferredSize(new java.awt.Dimension(84, 34));
+            if (bisaDiklik) {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        hover = true;
+                        repaint();
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        hover = false;
+                        repaint();
+                    }
+                });
+            }
+        }
+
+        @Override
+        protected void paintComponent(java.awt.Graphics g) {
+            java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
+            g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(hover ? getBackground().brighter() : getBackground());
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+            g2.dispose();
+            super.paintComponent(g);
+        }
     }
 }

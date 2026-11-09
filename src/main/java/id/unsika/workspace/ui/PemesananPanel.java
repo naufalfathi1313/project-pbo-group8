@@ -37,7 +37,7 @@ public class PemesananPanel extends JPanel implements Refreshable {
 
     public PemesananPanel() {
         super(new BorderLayout());
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setBorder(BorderFactory.createEmptyBorder(0, 24, 24, 24));
 
         cbJenis.addItem(SEMUA);
         for (JenisFasilitas j : JenisFasilitas.values()) {
@@ -47,6 +47,7 @@ public class PemesananPanel extends JPanel implements Refreshable {
         cbFasilitas.addActionListener(e -> tampilkanInfo());
 
         JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(8, 8, 8, 8);
         c.anchor = GridBagConstraints.WEST;
@@ -57,13 +58,20 @@ public class PemesananPanel extends JPanel implements Refreshable {
         baris(form, c, 2, "Fasilitas tersedia", cbFasilitas);
         baris(form, c, 3, "Keterangan", lblInfo);
 
-        JButton btnMulai = new JButton("Mulai Sekarang");
+        JButton btnMulai = Tema.tombolUtama("Mulai Sekarang");
         btnMulai.addActionListener(e -> mulai());
         JPanel tombol = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        tombol.setOpaque(false);
         tombol.add(btnMulai);
         baris(form, c, 4, "", tombol);
 
-        add(form, BorderLayout.NORTH);
+        Kartu kartu = new Kartu(new BorderLayout(0, 12));
+        kartu.add(Tema.label("Mulai sesi tanpa booking", 15f, java.awt.Font.BOLD, Tema.TEKS), BorderLayout.NORTH);
+        kartu.add(form, BorderLayout.CENTER);
+        JPanel batas = new JPanel(new BorderLayout()); // batasi lebar kartu supaya form tidak terlalu melebar
+        batas.add(kartu, BorderLayout.WEST);
+        kartu.setPreferredSize(new java.awt.Dimension(720, kartu.getPreferredSize().height));
+        add(batas, BorderLayout.NORTH);
         refresh();
     }
 
