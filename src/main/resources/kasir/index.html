@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kasir · Workspace & PC Gaming</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B0D1F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Warna sama dengan aplikasi Swing dan website */
+  :root {
+    --bg: #0B0D1F; --bg-2: #141833; --line: #262B52; --text: #E6E8F2; --muted: #8A8FB0;
+    --accent: #7C4DFF; --hijau: #4ADE80; --kuning: #F2B705; --merah: #FF8A8E; --abu: #8A8FB0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 Inter, system-ui, sans-serif; }
+  h1, h2, .brand, .angka { font-family: "Space Grotesk", Inter, sans-serif; }
+  h2 { font-size: 1.1rem; margin: 0 0 14px; }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; }
+  .brand { font-weight: 700; margin: 0; }
+  .brand span { color: var(--accent); }
+  .card { background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .redup { color: var(--muted); font-size: .88rem; }
+  input, select, button { font: inherit; color: var(--text); }
+  input, select { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
+  label { display: block; font-size: .85rem; color: var(--muted); margin: 12px 0 6px; }
+  button { padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-weight: 600; }
+  button.utama { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: wait; }
+  .error { color: var(--merah); font-size: .88rem; min-height: 1.2em; margin: 10px 0 0; }
+
+  /* Login */
+  #login { max-width: 380px; margin: 12vh auto 0; }
+  #login button { width: 100%; margin-top: 18px; padding: 13px; }
+
+  /* Dashboard */
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .angka { font-size: 1.7rem; font-weight: 700; margin: 2px 0 0; }
+  .dua { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; align-items: start; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .unit { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: var(--bg); }
+  .unit b { display: block; }
+  .pil { display: inline-block; font-size: .75rem; font-weight: 600; padding: 2px 9px; border-radius: 99px; margin-top: 8px; }
+  .TERSEDIA { color: var(--hijau); background: rgba(74, 222, 128, .12); }
+  .DIPAKAI, .AKTIF { color: var(--merah); background: rgba(255, 138, 142, .12); }
+  .MAINTENANCE { color: var(--abu); background: rgba(138, 143, 176, .14); }
+  .DIPESAN { color: var(--kuning); background: rgba(242, 183, 5, .12); }
+  #formWalkin button { width: 100%; margin-top: 16px; }
+  .sesi { display: grid; grid-template-columns: 1.4fr 1fr .9fr .8fr auto; gap: 10px; align-items: center;
+          padding: 12px 0; border-top: 1px solid var(--line); }
+  .sesi:first-of-type { border-top: 0; }
+  .sesi .pil { justify-self: start; margin-top: 0; }
+  .timer { font-family: "Space Grotesk", monospace; font-weight: 700; font-size: 1.1rem; }
+  .aksi { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+
+  /* Dialog bayar */
+  dialog { background: var(--bg-2); color: var(--text); border: 1px solid var(--line); border-radius: 16px; padding: 22px; width: min(640px, calc(100% - 32px)); }
+  dialog::backdrop { background: rgba(0, 0, 0, .6); }
+  .bayar { display: grid; grid-template-columns: 220px 1fr; gap: 20px; }
+  .bayar img { width: 100%; border-radius: 10px; background: #fff; }
+  .total { font-family: "Space Grotesk", sans-serif; font-size: 2.2rem; font-weight: 700; margin: 0 0 12px; }
+  .bawah { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+  @media (max-width: 760px) {
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .dua, .bayar { grid-template-columns: 1fr; }
+    .bayar img { max-width: 240px; margin: 0 auto; }
+    .sesi { grid-template-columns: 1fr 1fr; }
+    .aksi { grid-column: 1 / -1; justify-content: stretch; }
+    .aksi button { flex: 1; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <!-- ============ LOGIN ============ -->
+  <section id="login" class="card" hidden>
+    <p class="brand">WORKSPACE <span>&amp; PC GAMING</span></p>
+    <p class="redup">Masuk ke kasir online</p>
+    <form id="formLogin">
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button class="utama">Masuk</button>
+      <p class="error" id="errLogin" role="alert"></p>
+    </form>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <div id="dashboard" hidden>
+    <header>
+      <p class="brand">WORKSPACE <span>&amp; PC GAMING</span></p>
+      <div><span class="redup" id="namaUser"></span> <button id="btnLogout">Keluar</button></div>
+    </header>
+
+    <div class="tiles">
+      <div class="card"><span class="redup">Tersedia</span><p class="angka" id="tTersedia">0</p></div>
+      <div class="card"><span class="redup">Dipakai</span><p class="angka" id="tDipakai">0</p></div>
+      <div class="card"><span class="redup">Transaksi hari ini</span><p class="angka" id="tTransaksi">0</p></div>
+      <div class="card"><span class="redup">Pendapatan hari ini</span><p class="angka" id="tPendapatan">Rp0</p></div>
+    </div>
+
+    <div class="dua">
+      <section class="card">
+        <h2>Status fasilitas</h2>
+        <div class="grid" id="gridFasilitas"></div>
+      </section>
+      <section class="card">
+        <h2>Walk-in (mulai sekarang)</h2>
+        <form id="formWalkin">
+          <label for="fasilitasId">Fasilitas tersedia</label>
+          <select id="fasilitasId" name="fasilitasId" required></select>
+          <label for="pelangganId">Pelanggan</label>
+          <select id="pelangganId" name="pelangganId"></select>
+          <div id="pelangganBaru">
+            <label for="nama">Nama pelanggan baru</label>
+            <input id="nama" name="nama">
+            <label for="noHp">No HP</label>
+            <input id="noHp" name="noHp" inputmode="tel">
+          </div>
+          <button class="utama">Mulai timer</button>
+          <p class="error" id="errWalkin" role="alert"></p>
+        </form>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Sesi berjalan</h2>
+      <div id="daftarSesi"></div>
+      <p class="error" id="errSesi" role="alert"></p>
+    </section>
+  </div>
+
+  <!-- ============ DIALOG BAYAR ============ -->
+  <dialog id="dlgBayar">
+    <div class="bayar">
+      <div><img id="qr" alt="QR pembayaran"><p class="redup" style="text-align:center">Scan pakai kamera HP untuk bayar</p></div>
+      <div>
+        <span class="redup">Total tagihan</span>
+        <p class="total" id="bTotal"></p>
+        <p class="redup" id="bRincian"></p>
+        <p id="bStatus" class="redup">Menunggu pelanggan membayar lewat HP...</p>
+      </div>
+    </div>
+    <div class="bawah">
+      <button id="btnTutup">Batal</button>
+      <button class="utama" id="btnTunai">Bayar Tunai</button>
+    </div>
+  </dialog>
+</main>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  let data = { sesi: [] };
+  let idBayar = null;   // id pemesanan yang sedang ditagih
+  let cekBayar = null;  // interval cek status QR
+
+  /** Kirim permintaan ke server Java. Data dikirim sebagai form, jawabannya JSON. */
+  async function api(alamat, isi = {}) {
+    const res = await fetch('/api/' + alamat, { method: 'POST', body: new URLSearchParams(isi) });
+    const json = await res.json();
+    if (res.status === 401 && alamat !== 'login') { tampil(false); }
+    if (!res.ok) throw new Error(json.error || 'HTTP ' + res.status);
+    return json;
+  }
+
+  function tampil(sudahLogin) {
+    $('login').hidden = sudahLogin;
+    $('dashboard').hidden = !sudahLogin;
+  }
+
+  // Teks dari database dimasukkan dengan textContent, bukan innerHTML, supaya aman dari kode HTML jahil
+  function el(tag, kelas, teks) {
+    const e = document.createElement(tag);
+    if (kelas) e.className = kelas;
+    if (teks !== undefined) e.textContent = teks;
+    return e;
+  }
+
+  function durasi(ms) {
+    const d = Math.max(0, Math.floor(ms / 1000));
+    return [d / 3600, (d % 3600) / 60, d % 60].map((x) => String(Math.floor(x)).padStart(2, '0')).join(':');
+  }
+
+  // ---------- Muat & gambar ulang dashboard ----------
+  async function muat() {
+    try {
+      data = await api('data');
+    } catch (e) {
+      $('errSesi').textContent = e.message;
+      return;
+    }
+    $('errSesi').textContent = '';
+    const f = data.fasilitas;
+    $('tTersedia').textContent = f.filter((x) => x.status === 'TERSEDIA').length;
+    $('tDipakai').textContent = f.filter((x) => x.status === 'DIPAKAI').length;
+    $('tTransaksi').textContent = data.transaksiHariIni;
+    $('tPendapatan').textContent = data.pendapatanHariIni;
+
+    $('gridFasilitas').replaceChildren(...f.map((x) => {
+      const u = el('div', 'unit');
+      u.append(el('b', '', x.kode), el('span', 'redup', x.nama + ' · ' + x.tarif), document.createElement('br'),
+               el('span', 'pil ' + x.status, x.status));
+      return u;
+    }));
+
+    isiPilihan($('fasilitasId'), f.filter((x) => x.status === 'TERSEDIA').map((x) => [x.id, x.kode + ' - ' + x.nama + ' (' + x.tarif + ')']));
+    isiPilihan($('pelangganId'), [['', '+ Pelanggan baru'], ...data.pelanggan.map((p) => [p.id, p.nama])]);
+    $('pelangganBaru').hidden = $('pelangganId').value !== '';
+
+    const daftar = $('daftarSesi');
+    daftar.replaceChildren();
+    if (data.sesi.length === 0) daftar.append(el('p', 'redup', 'Belum ada sesi berjalan.'));
+    for (const s of data.sesi) {
+      const baris = el('div', 'sesi');
+      const kiri = el('div');
+      kiri.append(el('b', '', s.fasilitas), document.createElement('br'), el('span', 'redup', s.pelanggan + ' · ' + s.jadwal));
+      const timer = el('span', 'timer', s.mulai ? durasi(Date.now() - s.mulai) : '--:--:--');
+      timer.dataset.mulai = s.mulai || '';
+      const aksi = el('div', 'aksi');
+      if (s.status === 'DIPESAN') {
+        aksi.append(tombol('Check-in', () => jalankan('checkin', s.id)), tombol('Batalkan', () => {
+          if (confirm('Batalkan booking ' + s.fasilitas + '?')) jalankan('batal', s.id);
+        }));
+      } else {
+        aksi.append(tombol('Selesai & Bayar', () => bukaBayar(s.id), true));
+      }
+      baris.append(kiri, el('span', 'pil ' + s.status, s.status), timer, el('span', '', s.biaya), aksi);
+      daftar.append(baris);
+    }
+  }
+
+  function isiPilihan(select, opsi) {
+    const lama = select.value;
+    select.replaceChildren(...opsi.map(([v, t]) => { const o = el('option', '', t); o.value = v; return o; }));
+    if ([...select.options].some((o) => o.value === lama)) select.value = lama;
+  }
+
+  function tombol(teks, aksi, utama) {
+    const b = el('button', utama ? 'utama' : '', teks);
+    b.onclick = aksi;
+    return b;
+  }
+
+  async function jalankan(alamat, id) {
+    try { await api(alamat, { id }); } catch (e) { alert(e.message); }
+    muat();
+  }
+
+  // ---------- Pembayaran (sama alurnya dengan DialogBayar di Swing) ----------
+  async function bukaBayar(id) {
+    let t;
+    try { t = await api('tagih', { id }); } catch (e) { alert(e.message); return; }
+    idBayar = id;
+    $('bTotal').textContent = t.total;
+    $('bRincian').textContent = t.fasilitas + ' · ' + t.pelanggan + ' · durasi ' + t.durasi;
+    $('bStatus').textContent = 'Menunggu pelanggan membayar lewat HP...';
+    $('qr').src = '/api/qr?id=' + id + '&t=' + Date.now();
+    $('dlgBayar').showModal();
+    cekBayar = setInterval(cekStatusBayar, 3000);
+  }
+
+  async function cekStatusBayar() {
+    try {
+      const { status } = await api('status-bayar', { id: idBayar });
+      if (status === 'LUNAS') return selesaiBayar('QR (online)');
+      $('bStatus').textContent = status === 'DITOLAK'
+        ? 'Pelanggan memilih Tidak di HP-nya. Minta scan ulang, atau terima bayar tunai.'
+        : 'Menunggu pelanggan membayar lewat HP...';
+    } catch (e) {
+      $('bStatus').textContent = 'Belum terhubung ke server pembayaran. Mencoba lagi otomatis...';
+    }
+  }
+
+  async function selesaiBayar(metode) {
+    tutupBayar();
+    alert('Pembayaran lunas (' + metode + '). Fasilitas kembali TERSEDIA.');
+    muat();
+  }
+
+  function tutupBayar() {
+    clearInterval(cekBayar);
+    $('dlgBayar').close();
+  }
+
+  // ---------- Event ----------
+  $('formLogin').onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { nama } = await api('login', { username: $('username').value, password: $('password').value });
+      $('namaUser').textContent = nama;
+      $('password').value = '';
+      $('errLogin').textContent = '';
+      tampil(true);
+      muat();
+    } catch (err) {
+      $('errLogin').textContent = err.message;
+    }
+  };
+
+  $('btnLogout').onclick = async () => { await api('logout'); tampil(false); };
+
+  $('pelangganId').onchange = () => { $('pelangganBaru').hidden = $('pelangganId').value !== ''; };
+
+  $('formWalkin').onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api('walkin', Object.fromEntries(new FormData(e.target)));
+      $('errWalkin').textContent = '';
+      $('nama').value = $('noHp').value = '';
+      muat();
+    } catch (err) {
+      $('errWalkin').textContent = err.message;
+    }
+  };
+
+  $('btnTutup').onclick = tutupBayar;
+  $('dlgBayar').onclose = () => clearInterval(cekBayar);
+  $('btnTunai').onclick = async () => {
+    try { await api('tunai', { id: idBayar }); selesaiBayar('Tunai'); } catch (e) { alert(e.message); }
+  };
+
+  // Timer durasi berjalan tiap detik di browser; data dimuat ulang dari server tiap 5 detik
+  setInterval(() => {
+    document.querySelectorAll('.timer').forEach((t) => {
+      if (t.dataset.mulai) t.textContent = durasi(Date.now() - Number(t.dataset.mulai));
+    });
+  }, 1000);
+  setInterval(() => { if (!$('dashboard').hidden && !$('dlgBayar').open) muat(); }, 5000);
+
+  // Saat halaman dibuka: cek apakah masih login
+  api('saya').then(({ nama }) => { $('namaUser').textContent = nama; tampil(true); muat(); })
+             .catch(() => tampil(false));
+</script>
+</body>
+</html>
