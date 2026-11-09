@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Working Space & Rental PC Gaming · UAS PBO Kelompok 8</title>
+<meta name="description" content="Aplikasi desktop Java Swing + MySQL untuk penyewaan meja kerja, ruang meeting, dan PC gaming. UAS Pemrograman Berorientasi Objek, Fasilkom Unsika.">
+<meta name="theme-color" content="#0B0D1F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0D1F;
+    --bg-2: #12152B;
+    --line: #23274A;
+    --text: #E6E8F2;
+    --muted: #8A8FB0;
+    --accent: #7C4DFF;
+    --accent-2: #B39DFF;
+    --green: #1E8E5A;
+    --yellow: #F2B705;
+    --red: #E5484D;
+    --gray: #4A5068;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 Inter, system-ui, sans-serif;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: var(--accent-2); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  h1, h2, h3 { font-family: "Space Grotesk", Inter, sans-serif; line-height: 1.15; margin: 0 0 .5em; }
+  h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  section { padding: 72px 0; border-top: 1px solid var(--line); }
+  .eyebrow { color: var(--accent-2); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
+  .lead { color: var(--muted); max-width: 640px; }
+
+  /* nav */
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(11,13,31,.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 16px; }
+  .brand { font-family: "Space Grotesk", sans-serif; font-weight: 700; text-decoration: none; color: var(--text); white-space: nowrap; }
+  .brand span { color: var(--accent); }
+  .links { display: flex; gap: 20px; }
+  .links a { color: var(--muted); text-decoration: none; font-size: .95rem; }
+  .links a:hover { color: var(--text); }
+  @media (max-width: 720px) { .links { display: none; } }
+
+  /* hero */
+  .hero { padding: 80px 0 56px; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -40% -10% auto auto; width: 620px; height: 620px;
+    background: radial-gradient(circle, rgba(124,77,255,.35), transparent 65%); pointer-events: none;
+  }
+  .hero h1 { font-size: clamp(2.2rem, 6vw, 4rem); max-width: 820px; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 40px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px;
+    font-weight: 600; text-decoration: none; border: 1px solid var(--line); color: var(--text); background: var(--bg-2);
+  }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn:hover { filter: brightness(1.12); }
+  .shot { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .badge { font-size: .8rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+
+  /* features */
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 32px; }
+  .card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .card h3 { font-size: 1.15rem; }
+  .card p { color: var(--muted); margin: 0; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; }
+
+  /* gallery */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 16px; }
+  .tabs button {
+    font: inherit; color: var(--muted); background: transparent; border: 1px solid var(--line);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .caption { color: var(--muted); margin-top: 12px; }
+
+  /* oop */
+  .tree { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); margin-top: 16px; }
+  .tree .card { border-top: 3px solid var(--accent); }
+  .root { text-align: center; max-width: 360px; margin: 32px auto 0; }
+  .root code, .tree code { font-family: ui-monospace, Menlo, monospace; color: var(--accent-2); }
+  .connector { width: 2px; height: 28px; background: var(--line); margin: 0 auto; }
+  @media (max-width: 760px) { .tree { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: .95rem; }
+  th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  .table-scroll { overflow-x: auto; }
+
+  /* steps */
+  ol.steps { counter-reset: s; list-style: none; padding: 0; display: grid; gap: 14px; margin-top: 28px; }
+  ol.steps li { min-width: 0; overflow-wrap: anywhere; counter-increment: s; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 18px 18px 64px; position: relative; }
+  ol.steps li::before {
+    content: counter(s); position: absolute; left: 18px; top: 16px; width: 30px; height: 30px; border-radius: 8px;
+    background: var(--accent); color: #fff; display: grid; place-items: center; font-weight: 700;
+  }
+  pre { background: #070816; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: .9rem; margin: 10px 0 0; }
+
+  /* team */
+  .team { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+  .member { display: flex; align-items: center; gap: 14px; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 20px; min-width: 240px; flex: 1; }
+  .avatar { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #2D1B69); display: grid; place-items: center; font-weight: 700; font-family: "Space Grotesk", sans-serif; }
+  footer { border-top: 1px solid var(--line); padding: 32px 0; color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#">WORKSPACE<span>&</span>PC GAMING</a>
+    <div class="links">
+      <a href="#fitur">Fitur</a>
+      <a href="#tampilan">Tampilan</a>
+      <a href="#oop">Konsep OOP</a>
+      <a href="#jalankan">Cara Menjalankan</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">UAS Pemrograman Berorientasi Objek · Kelompok 8</div>
+    <h1>Kelola sewa <em>meja kerja</em>, <em>ruang meeting</em>, dan <em>PC gaming</em> dalam satu aplikasi.</h1>
+    <p class="lead">Aplikasi desktop Java Swing + MySQL dengan status ketersediaan real-time, grid jadwal per jam, timer durasi pemakaian, dan rekap pendapatan.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/naufalfathi1313/project-pbo-group8/releases/latest">⬇ Download Aplikasi (.jar)</a>
+      <a class="btn" href="https://github.com/naufalfathi1313/project-pbo-group8">Lihat Kode di GitHub</a>
+    </div>
+    <div class="shot"><img src="img/1-Dashboard.webp" alt="Dashboard status fasilitas real-time" width="1280" height="760"></div>
+    <div class="badges">
+      <span class="badge">Java 17+</span><span class="badge">Java Swing</span><span class="badge">MySQL</span>
+      <span class="badge">JDBC</span><span class="badge">Maven</span><span class="badge">FlatLaf</span><span class="badge">JUnit 5</span>
+    </div>
+  </div>
+</header>
+
+<section id="fitur">
+  <div class="wrap">
+    <div class="eyebrow">Fitur</div>
+    <h2>Semua yang dibutuhkan kasir working space.</h2>
+    <div class="grid">
+      <div class="card"><h3>Status real-time</h3><p>Dashboard kartu berwarna diperbarui otomatis setiap 2 detik, termasuk perubahan dari komputer kasir lain.</p></div>
+      <div class="card"><h3>Grid jadwal per jam</h3><p>Pilih beberapa jam berurutan, lihat estimasi biaya, lalu konfirmasi booking. Slot bentrok otomatis ditolak.</p></div>
+      <div class="card"><h3>Timer durasi</h3><p>Durasi dan biaya berjalan tampil setiap detik. Saat selesai, biaya dihitung otomatis dan struk dicetak.</p></div>
+      <div class="card"><h3>Walk-in</h3><p>Pelanggan tanpa booking bisa langsung main, asalkan unitnya kosong dan tidak sedang dibooking.</p></div>
+      <div class="card"><h3>Rekap pendapatan</h3><p>Filter per periode dan jenis fasilitas, lengkap dengan total transaksi, total jam, dan pendapatan per jenis.</p></div>
+      <div class="card"><h3>Kelola data</h3><p>Tambah, ubah, dan hapus fasilitas serta pelanggan. Data yang punya riwayat transaksi terlindungi.</p></div>
+    </div>
+    <div class="grid">
+      <div class="card"><p><span class="dot" style="background:var(--green)"></span><b style="color:var(--text)">Tersedia</b>: bisa dipesan</p></div>
+      <div class="card"><p><span class="dot" style="background:var(--yellow)"></span><b style="color:var(--text)">Dipesan</b>: masuk jam booking</p></div>
+      <div class="card"><p><span class="dot" style="background:var(--red)"></span><b style="color:var(--text)">Dipakai</b>: timer berjalan</p></div>
+      <div class="card"><p><span class="dot" style="background:var(--gray)"></span><b style="color:var(--text)">Maintenance</b>: tidak bisa dipesan</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="tampilan">
+  <div class="wrap">
+    <div class="eyebrow">Tampilan</div>
+    <h2>Tema gelap ala gaming.</h2>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-img="img/2-Jadwal.webp" data-cap="Grid jadwal per jam: klik slot hijau, pilih pelanggan, lalu Konfirmasi Booking.">Jadwal & Booking</button>
+      <button role="tab" aria-selected="false" data-img="img/1-Dashboard.webp" data-cap="Dashboard: kartu tiap fasilitas berwarna sesuai statusnya saat ini.">Dashboard</button>
+      <button role="tab" aria-selected="false" data-img="img/4-Sesi_Aktif.webp" data-cap="Sesi Aktif: check-in booking, timer durasi, biaya berjalan, dan tombol Selesai & Bayar.">Sesi Aktif</button>
+      <button role="tab" aria-selected="false" data-img="img/3-Walk-in.webp" data-cap="Walk-in: pelanggan langsung main tanpa booking.">Walk-in</button>
+      <button role="tab" aria-selected="false" data-img="img/5-Rekap.webp" data-cap="Rekap: transaksi selesai per periode dan total pendapatan.">Rekap</button>
+      <button role="tab" aria-selected="false" data-img="img/6-Kelola_Data.webp" data-cap="Kelola Data: CRUD fasilitas dan pelanggan.">Kelola Data</button>
+    </div>
+    <div class="shot"><img id="gallery-img" src="img/2-Jadwal.webp" alt="Tangkapan layar aplikasi" width="1280" height="760"></div>
+    <p class="caption" id="gallery-cap">Grid jadwal per jam: klik slot hijau, pilih pelanggan, lalu Konfirmasi Booking.</p>
+  </div>
+</section>
+
+<section id="oop">
+  <div class="wrap">
+    <div class="eyebrow">Konsep OOP</div>
+    <h2>Satu method, tiga cara menghitung biaya.</h2>
+    <p class="lead">Class abstrak <code>Fasilitas</code> diturunkan menjadi tiga subclass. Masing-masing meng-override <code>hitungBiaya()</code> dengan aturan tarifnya sendiri. Inilah polymorphism.</p>
+
+    <div class="root card"><code>abstract class Fasilitas</code><br><span style="color:var(--muted)">implements Bookable</span></div>
+    <div class="connector"></div>
+    <div class="tree">
+      <div class="card"><h3><code>MejaDesk</code></h3><p>Rp10.000/jam · ditagih per 30 menit</p></div>
+      <div class="card"><h3><code>MeetingRoom</code></h3><p>Rp50.000–80.000/jam · per jam penuh, minimal 1 jam</p></div>
+      <div class="card"><h3><code>PCGaming</code></h3><p>Rp12.000 Reguler / Rp20.000 VIP · per 15 menit</p></div>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <tr><th>Pilar</th><th>Penerapan di kode</th></tr>
+        <tr><td><b>Abstraction</b></td><td>Abstract class <code>Fasilitas</code> dan interface <code>Bookable</code>, <code>Dao&lt;T&gt;</code>, <code>Refreshable</code>.</td></tr>
+        <tr><td><b>Inheritance</b></td><td><code>MejaDesk</code>, <code>MeetingRoom</code>, <code>PCGaming</code> extends <code>Fasilitas</code>. Setiap panel GUI extends <code>JPanel</code>/<code>JFrame</code>.</td></tr>
+        <tr><td><b>Encapsulation</b></td><td>Semua atribut <code>private</code>, setter memvalidasi input (tarif &gt; 0, kapasitas &gt; 0, No HP 8–15 digit).</td></tr>
+        <tr><td><b>Polymorphism</b></td><td><code>List&lt;Fasilitas&gt;</code> berisi campuran subclass; <code>f.hitungBiaya(menit)</code> otomatis memanggil versi milik subclass-nya.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="jalankan">
+  <div class="wrap">
+    <div class="eyebrow">Cara Menjalankan</div>
+    <h2>Tiga langkah di laptop kamu.</h2>
+    <ol class="steps">
+      <li><b>Install Java 17+ dan MySQL.</b> Windows: pakai XAMPP lalu nyalakan MySQL. Mac: <code>brew install mysql</code> lalu <code>brew services start mysql</code>.</li>
+      <li><b>Import database</b> dari file <code>database/workspace_db.sql</code> di repo GitHub.
+        <pre>mysql -u root &lt; database/workspace_db.sql</pre></li>
+      <li><b>Download <code>workspace-rental.jar</code></b> dari halaman Releases, lalu dobel klik atau jalankan:
+        <pre>java -jar workspace-rental.jar</pre>
+        Login dengan <code>admin</code> / <code>admin123</code>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="tim">
+  <div class="wrap">
+    <div class="eyebrow">Kelompok 8</div>
+    <h2>Dibuat oleh</h2>
+    <div class="team">
+      <div class="member"><div class="avatar">S</div><div><b>Salwa</b><br><span style="color:var(--muted)">GUI, desain tampilan, laporan</span></div></div>
+      <div class="member"><div class="avatar">F</div><div><b>Fathir</b><br><span style="color:var(--muted)">Class OOP, database, logika timer</span></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Pemrograman Berorientasi Objek (SYS61516) · Fakultas Ilmu Komputer, Universitas Singaperbangsa Karawang · 2026</div>
+</footer>
+
+<script>
+  document.querySelectorAll('.tabs button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tabs button').forEach(function (b) { b.setAttribute('aria-selected', 'false'); });
+      btn.setAttribute('aria-selected', 'true');
+      document.getElementById('gallery-img').src = btn.dataset.img;
+      document.getElementById('gallery-cap').textContent = btn.dataset.cap;
+    });
+  });
+</script>
+</body>
+</html>

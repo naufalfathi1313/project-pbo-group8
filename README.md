@@ -36,6 +36,11 @@ Biaya akhir selalu dihitung dari **timer** (check-in sampai selesai). Jadwal boo
 
 Penjelasan lengkap ada di [docs/DESAIN.md](docs/DESAIN.md).
 
+## Download
+
+- **Aplikasi siap pakai:** unduh `workspace-rental.jar` di halaman [Releases](https://github.com/naufalfathi1313/project-pbo-group8/releases/latest), lalu jalankan `java -jar workspace-rental.jar` (MySQL tetap harus menyala dan database sudah di-import, lihat langkah 2 di bawah).
+- **Halaman showcase:** folder [`web/`](web/) berisi halaman statis untuk Vercel. Di Vercel, set **Root Directory = `web`** dan **Framework Preset = Other**.
+
 ## Cara Menjalankan
 
 ### 1. Siapkan JDK 17 dan VS Code
@@ -66,7 +71,13 @@ Untuk melihat isi tabel tanpa phpMyAdmin, pakai extension VS Code **"MySQL" (Wei
 - Buka `src/main/java/id/unsika/workspace/App.java`, klik **Run**.
 - Atau lewat terminal: `mvn compile exec:java`
 
-### 4. Jalankan unit test
+### 4. Membuat file JAR sendiri
+```bash
+mvn package
+```
+Hasilnya `target/workspace-rental.jar`, satu file berisi semua library.
+
+### 5. Jalankan unit test
 ```bash
 mvn test
 ```
