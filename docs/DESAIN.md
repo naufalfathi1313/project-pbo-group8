@@ -39,8 +39,8 @@ Perbedaan cara menghitung biaya inilah yang menjadi inti **polymorphism**: semua
 | **Encapsulation** | Semua atribut `private`, diakses lewat getter/setter dengan validasi (mis. tarif tidak boleh negatif). |
 | **Polymorphism** | `List<Fasilitas>` berisi campuran ketiga subclass; memanggil `f.hitungBiaya(menit)` otomatis memakai versi milik subclass-nya (*overriding*). |
 
-Materi lain yang ikut dipakai (sesuai PDF kuliah): `ArrayList`, Generics (`Dao<T>`), for-each, enum, exception handling.
-Tambahan dari fitur bayar QR: *method overloading* (`selesaikan(p)` dan `selesaikan(p, waktu)`), thread terpisah dengan `SwingWorker` supaya tampilan tidak macet, dan HTTP client bawaan Java (`java.net.http.HttpClient`).
+Materi lain yang ikut dipakai (sesuai PDF kuliah): `ArrayList`, Generics (`Dao<T>`), for-each, enum, exception handling, dan *constructor overloading* (`Pemesanan` punya 3 constructor: walk-in, booking, dan data dari database).
+Tambahan dari fitur bayar QR: thread terpisah dengan `SwingWorker` supaya tampilan tidak macet, dan HTTP client bawaan Java (`java.net.http.HttpClient`).
 
 ## 4. Class Diagram
 
