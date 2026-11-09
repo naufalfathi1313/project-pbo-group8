@@ -12,7 +12,7 @@ Tugas UAS **Pemrograman Berorientasi Objek (SYS61516)**, Fakultas Ilmu Komputer,
 | Fitur | Keterangan |
 |---|---|
 | Login | Akun default `admin` / `admin123` |
-| Dashboard real-time | Kartu tiap fasilitas berwarna sesuai status, diperbarui otomatis setiap 2 detik |
+| Dashboard real-time | Kartu tiap fasilitas berwarna sesuai status, diperbarui otomatis setiap 3 detik |
 | Jadwal & Booking | Grid jadwal per jam (Tersedia / Dipilih / Dibooking / Dipakai / Tutup-Lewat). Pilih beberapa jam berurutan, lihat estimasi biaya, lalu konfirmasi |
 | Walk-in | Pelanggan tanpa booking langsung main, timer langsung jalan |
 | Timer durasi | Tab Sesi Aktif: check-in booking, durasi dan biaya berjalan setiap detik, struk saat selesai |

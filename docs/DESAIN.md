@@ -21,7 +21,7 @@ Perbedaan cara menghitung biaya inilah yang menjadi inti **polymorphism**: semua
 ## 2. Fitur
 
 1. **Login** (satu akun admin)
-2. **Dashboard status real-time**: kartu tiap fasilitas berwarna hijau (Tersedia), merah (Dipakai), kuning (Dipesan), abu-abu (Maintenance). Diperbarui otomatis tiap detik dengan `javax.swing.Timer`.
+2. **Dashboard status real-time**: kartu tiap fasilitas berwarna hijau (Tersedia), merah (Dipakai), kuning (Dipesan), abu-abu (Maintenance). Timer di kartu berjalan tiap detik dan data dimuat ulang tiap 3 detik dengan `javax.swing.Timer`.
 3. **Jadwal & Booking**: grid per jam (08:00–23:00) dengan status Tersedia / Dipilih / Dibooking / Dipakai / Tutup-Lewat. Kasir memilih beberapa jam berurutan pada satu fasilitas, melihat estimasi biaya, lalu konfirmasi.
 3b. **Walk-in**: pelanggan tanpa booking langsung main, timer langsung jalan.
 3c. **Tema gelap** ala gaming (library FlatLaf, warna navy `#0B0D1F` + aksen ungu `#7C4DFF`).
@@ -137,7 +137,7 @@ src/main/java/id/unsika/workspace/
 │   └── PemesananService.java    # logika mulai/selesai sesi, rekap
 └── ui/                          # Java Swing
     ├── LoginFrame.java
-    ├── MainFrame.java           # JTabbedPane
+    ├── MainFrame.java           # menu samping + CardLayout
     ├── DashboardPanel.java      # kartu status real-time
     ├── JadwalPanel.java         # grid jadwal per jam + booking
     ├── PemesananPanel.java      # walk-in
