@@ -37,24 +37,37 @@ public class SesiAktifPanel extends JPanel implements Refreshable {
 
     public SesiAktifPanel() {
         super(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setBorder(BorderFactory.createEmptyBorder(0, 24, 24, 24));
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setRowHeight(24);
+        table.setFillsViewportHeight(true);
+        int[] lebar = {50, 150, 230, 150, 200, 140, 90, 130};
+        for (int i = 0; i < lebar.length; i++) {
+            table.getColumnModel().getColumn(i).setPreferredWidth(lebar[i]);
+        }
 
         JButton btnCheckIn = new JButton("Check-in (Mulai Timer)");
         btnCheckIn.addActionListener(e -> aksi(Aksi.CHECK_IN));
-        JButton btnSelesai = new JButton("Selesai & Bayar");
+        JButton btnSelesai = Tema.tombolUtama("Selesai & Bayar");
         btnSelesai.addActionListener(e -> aksi(Aksi.SELESAI));
         JButton btnBatal = new JButton("Batalkan Booking");
         btnBatal.addActionListener(e -> aksi(Aksi.BATAL));
 
-        JPanel tombol = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel tombol = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        tombol.setOpaque(false);
         tombol.add(btnCheckIn);
-        tombol.add(btnSelesai);
+        tombol.add(javax.swing.Box.createHorizontalStrut(8));
         tombol.add(btnBatal);
+        tombol.add(javax.swing.Box.createHorizontalStrut(8));
+        tombol.add(btnSelesai);
 
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        add(tombol, BorderLayout.SOUTH);
+        Kartu kartu = new Kartu(new BorderLayout(0, 14));
+        JPanel kepala = new JPanel(new BorderLayout());
+        kepala.setOpaque(false);
+        kepala.add(Tema.label("Pilih baris, lalu klik aksi di kanan", 13f, java.awt.Font.PLAIN, Tema.TEKS_REDUP), BorderLayout.WEST);
+        kepala.add(tombol, BorderLayout.EAST);
+        kartu.add(kepala, BorderLayout.NORTH);
+        kartu.add(new JScrollPane(table), BorderLayout.CENTER);
+        add(kartu, BorderLayout.CENTER);
 
         refresh();
         new Timer(1000, e -> {
@@ -187,7 +200,7 @@ public class SesiAktifPanel extends JPanel implements Refreshable {
                 case 0 -> p.getId();
                 case 1 -> p.getPelanggan().getNama();
                 case 2 -> p.getFasilitas().toString();
-                case 3 -> aktif ? "BERJALAN" : "MENUNGGU CHECK-IN";
+                case 3 -> aktif ? "Berjalan" : "Menunggu check-in";
                 case 4 -> p.punyaJadwal()
                         ? Format.waktu(p.getJadwalMulai()) + " - " + String.format("%02d:00", p.getJadwalSelesai().getHour())
                         : "Walk-in";

@@ -42,6 +42,7 @@ public class KelolaDataPanel extends JPanel implements Refreshable {
 
     public KelolaDataPanel() {
         super(new BorderLayout());
+        setBorder(BorderFactory.createEmptyBorder(0, 24, 24, 24));
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Fasilitas", fasilitasForm);
         tabs.addTab("Pelanggan", pelangganForm);

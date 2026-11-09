@@ -19,6 +19,21 @@ public final class Format {
         return "Rp" + nf.format(Math.round(nilai));
     }
 
+    /** Angka ringkas untuk sumbu grafik: 25000 -> "25rb", 1500000 -> "1,5jt". */
+    public static String ringkas(double nilai) {
+        if (nilai >= 1_000_000) {
+            return trim(nilai / 1_000_000) + "jt";
+        }
+        if (nilai >= 1_000) {
+            return trim(nilai / 1_000) + "rb";
+        }
+        return String.valueOf(Math.round(nilai));
+    }
+
+    private static String trim(double x) {
+        return (x == Math.rint(x)) ? String.valueOf((long) x) : String.format(new Locale("id", "ID"), "%.1f", x);
+    }
+
     /** 3725 detik -> "01:02:05" */
     public static String durasi(long detik) {
         return String.format("%02d:%02d:%02d", detik / 3600, (detik % 3600) / 60, detik % 60);

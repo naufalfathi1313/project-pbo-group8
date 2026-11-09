@@ -27,6 +27,12 @@
             <artifactId>flatlaf</artifactId>
             <version>3.4.1</version>
         </dependency>
+        <!-- Font Inter supaya tampilan sama di Windows & Mac -->
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-fonts-inter</artifactId>
+            <version>4.0</version>
+        </dependency>
         <!-- Untuk unit test perhitungan biaya -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

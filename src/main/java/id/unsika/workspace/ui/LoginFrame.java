@@ -3,56 +3,80 @@ package id.unsika.workspace.ui;
 import id.unsika.workspace.dao.UserDao;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 
 /** Jendela login. INHERITANCE: LoginFrame adalah turunan JFrame milik Swing. */
 public class LoginFrame extends JFrame {
 
-    private final JTextField txtUsername = new JTextField(18);
-    private final JPasswordField txtPassword = new JPasswordField(18);
+    private final JTextField txtUsername = new JTextField();
+    private final JPasswordField txtPassword = new JPasswordField();
     private final UserDao userDao = new UserDao();
 
     public LoginFrame() {
         super("Login - Working Space & Rental PC Gaming");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(6, 6, 6, 6);
-        c.fill = GridBagConstraints.HORIZONTAL;
+        txtUsername.putClientProperty("JTextField.placeholderText", "admin");
+        txtPassword.putClientProperty("JTextField.placeholderText", "••••••••");
+        txtPassword.putClientProperty("JPasswordField.showRevealButton", true);
 
-        JLabel judul = new JLabel("WORKSPACE & PC GAMING", SwingConstants.CENTER);
-        judul.setFont(judul.getFont().deriveFont(Font.BOLD, 18f));
-        c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
-        panel.add(judul, c);
+        JPanel form = new JPanel();
+        form.setOpaque(false);
+        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
+        form.add(rata(Tema.label("WORKSPACE", 24f, Font.BOLD, Tema.TEKS)));
+        form.add(rata(Tema.label("& PC GAMING", 24f, Font.BOLD, Tema.AKSEN)));
+        form.add(Box.createVerticalStrut(6));
+        form.add(rata(Tema.label("Masuk untuk mulai melayani pelanggan", 13f, Font.PLAIN, Tema.TEKS_REDUP)));
+        form.add(Box.createVerticalStrut(26));
+        form.add(rata(Tema.label("Username", 12f, Font.BOLD, Tema.TEKS_REDUP)));
+        form.add(Box.createVerticalStrut(6));
+        form.add(rata(lebar(txtUsername)));
+        form.add(Box.createVerticalStrut(14));
+        form.add(rata(Tema.label("Password", 12f, Font.BOLD, Tema.TEKS_REDUP)));
+        form.add(Box.createVerticalStrut(6));
+        form.add(rata(lebar(txtPassword)));
+        form.add(Box.createVerticalStrut(22));
 
-        c.gridwidth = 1;
-        c.gridy = 1; panel.add(new JLabel("Username"), c);
-        c.gridx = 1; panel.add(txtUsername, c);
-        c.gridx = 0; c.gridy = 2; panel.add(new JLabel("Password"), c);
-        c.gridx = 1; panel.add(txtPassword, c);
-
-        JButton btnLogin = new JButton("Login");
+        JButton btnLogin = Tema.tombolUtama("Masuk");
         btnLogin.addActionListener(e -> login());
-        c.gridx = 0; c.gridy = 3; c.gridwidth = 2;
-        panel.add(btnLogin, c);
+        form.add(rata(lebar(btnLogin)));
 
-        getRootPane().setDefaultButton(btnLogin); // tekan Enter = klik Login
-        add(panel);
+        Kartu kartu = new Kartu(new BorderLayout());
+        kartu.setBorder(BorderFactory.createEmptyBorder(32, 32, 32, 32));
+        kartu.add(form);
+
+        JPanel latar = new JPanel(new GridBagLayout()); // GridBagLayout tanpa constraint = isi di tengah
+        latar.setPreferredSize(new Dimension(520, 520));
+        latar.add(kartu);
+        add(latar);
+
+        getRootPane().setDefaultButton(btnLogin); // tekan Enter = klik Masuk
         pack();
         setLocationRelativeTo(null); // posisi di tengah layar
+    }
+
+    private static JComponent rata(JComponent c) {
+        c.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return c;
+    }
+
+    private static JComponent lebar(JComponent c) {
+        Dimension d = new Dimension(320, 40);
+        c.setPreferredSize(d);
+        c.setMaximumSize(d);
+        return c;
     }
 
     private void login() {

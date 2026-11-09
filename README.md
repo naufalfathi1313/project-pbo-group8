@@ -16,9 +16,11 @@ Tugas UAS **Pemrograman Berorientasi Objek (SYS61516)**, Fakultas Ilmu Komputer,
 | Jadwal & Booking | Grid jadwal per jam (Tersedia / Dipilih / Dibooking / Dipakai / Tutup-Lewat). Pilih beberapa jam berurutan, lihat estimasi biaya, lalu konfirmasi |
 | Walk-in | Pelanggan tanpa booking langsung main, timer langsung jalan |
 | Timer durasi | Tab Sesi Aktif: check-in booking, durasi dan biaya berjalan setiap detik, struk saat selesai |
-| Rekap | Transaksi per periode, filter jenis, total pendapatan |
+| Rekap + grafik | Angka ringkasan, grafik pendapatan per hari & per jenis (Java2D, ada tooltip saat mouse di atas batang), dan tabel detail |
 | Kelola data | Tambah / ubah / hapus fasilitas dan pelanggan |
-| Tema gelap | Tampilan gelap ala gaming memakai library FlatLaf |
+| Tampilan | Tema gelap ala gaming (FlatLaf + font Inter), menu samping, kartu dengan sudut bulat |
+
+![Rekap](docs/screenshots/5-Rekap.png)
 
 ![Jadwal](docs/screenshots/2-Jadwal.png)
 
