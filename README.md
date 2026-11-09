@@ -53,6 +53,28 @@ Penjelasan lengkap ada di [docs/DESAIN.md](docs/DESAIN.md).
 Laptop kasir dan HP pelanggan butuh internet. Kalau internet mati, pakai tombol **Bayar Tunai**.
 Ini simulasi untuk tugas, tidak ada uang yang ditarik. Di bisnis sungguhan, bagian ini diganti payment gateway QRIS resmi.
 
+## Versi Web (kasir online)
+
+Selain aplikasi Swing, ada kasir versi web yang bisa dibuka dari browser mana saja (laptop atau HP) lewat internet.
+Isinya: login, status fasilitas, walk-in, sesi berjalan dengan timer, check-in/batal booking, dan Selesai & Bayar (QR atau tunai).
+Booking jadwal, rekap lengkap, dan kelola data tetap di aplikasi Swing; keduanya memakai database yang sama.
+
+Versi web **tidak menulis ulang logika**. [`web/WebServer.java`](src/main/java/id/unsika/workspace/web/WebServer.java) memanggil
+`UserDao`, `FasilitasDao`, `PelangganDao`, `PemesananDao`, `PemesananService`, dan `PembayaranQr` yang sama dengan Swing.
+Halamannya ada di [`src/main/resources/kasir/index.html`](src/main/resources/kasir/index.html).
+
+Coba di laptop sendiri (MySQL lokal harus jalan):
+
+```bash
+mvn package
+java -cp target/workspace-rental.jar id.unsika.workspace.web.WebServer
+# buka http://localhost:8080, login admin / admin123
+```
+
+Online di [Render](https://render.com): buat **Web Service** dari repo ini (runtime Docker, memakai `Dockerfile`), lalu isi environment variable
+`DB_URL`, `DB_USER`, `DB_PASSWORD` dengan database MySQL online (import `database/workspace_db.sql` ke sana).
+Setelah online, **ganti password admin** karena siapa pun bisa membuka alamatnya.
+
 ## Cara Menjalankan
 
 ### 1. Siapkan JDK 17 dan VS Code
@@ -98,9 +120,12 @@ src/main/java/id/unsika/workspace/
 ├── db/Koneksi.java     koneksi MySQL (Singleton)
 ├── dao/                akses database (interface generik Dao<T>)
 ├── service/            logika pemesanan (pesan, check-in, selesai, batal) + PembayaranQr (cek status bayar QR)
+├── web/WebServer.java  server versi web (kasir online), memakai ulang dao + service
 ├── ui/                 tampilan Java Swing (Login, Dashboard, Jadwal, Walk-in, Sesi Aktif, Dialog Bayar + QR, Rekap, Kelola Data, Tema)
 └── util/Format.java    format Rupiah, durasi, tanggal
 database/workspace_db.sql   struktur tabel + data contoh
 docs/                       desain dan screenshot
 web/                        showcase + halaman bayar QR (Vercel)
+src/main/resources/kasir/   halaman kasir versi web
+Dockerfile                  untuk menjalankan versi web di Render
 ```
