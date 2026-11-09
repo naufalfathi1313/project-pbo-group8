@@ -49,12 +49,37 @@
   }
   button.utama { background: var(--accent); border-color: var(--accent); color: #fff; }
   button:disabled { opacity: .6; cursor: wait; }
+
+  /* Gerak ala Apple: cepat di awal lalu melambat halus; ikon hasil memantul sedikit seperti pegas */
+  .muncul { animation: muncul .5s cubic-bezier(.22, 1, .36, 1) both; }
+  @keyframes muncul { from { opacity: 0; transform: translateY(16px) scale(.98); } }
+  button { transition: transform .15s ease-out; }
+  button:active:not(:disabled) { transform: scale(.97); }
+  /* Tombol yang sedang mengirim: teks diganti lingkaran berputar */
+  button.memproses { color: transparent; opacity: 1; position: relative; }
+  button.memproses::after {
+    content: ""; position: absolute; inset: 0; margin: auto; width: 18px; height: 18px;
+    border: 2px solid rgba(255, 255, 255, .3); border-top-color: #fff; border-radius: 50%;
+    animation: putar .7s linear infinite;
+  }
+  @keyframes putar { to { transform: rotate(360deg); } }
   .error { color: var(--no); font-size: .9rem; margin: 12px 0 0; }
   .error:empty { display: none; }
   .hasil { text-align: center; }
   .ikon { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto 14px; font-size: 2rem; font-weight: 700; }
   .ok .ikon { background: rgba(74, 222, 128, .14); color: var(--ok); }
   .batal .ikon { background: rgba(255, 138, 142, .14); color: var(--no); }
+  /* Lingkaran muncul membesar, lalu centang / silang "digambar" seperti di Apple Pay */
+  .ikon { animation: pop .5s cubic-bezier(.34, 1.56, .64, 1) both; }
+  .ikon svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .ikon path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: gambar .4s .25s ease-out forwards; }
+  @keyframes pop { from { opacity: 0; transform: scale(.4); } }
+  @keyframes gambar { to { stroke-dashoffset: 0; } }
+  /* Pengguna yang mematikan animasi di HP-nya langsung melihat hasil akhir */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .ikon path { stroke-dashoffset: 0; }
+  }
   .hasil h1 { font-family: "Space Grotesk", Inter, sans-serif; font-size: 1.5rem; margin: 0 0 6px; }
   .hasil button { width: 100%; margin-top: 20px; }
   .catatan { color: var(--muted); font-size: .8rem; text-align: center; margin: 20px 0 0; }
@@ -64,7 +89,7 @@
 <main>
   <p class="brand">WORKSPACE <span>&amp; PC GAMING</span></p>
 
-  <section id="tagihan" class="card" hidden>
+  <section id="tagihan" class="card muncul" hidden>
     <p class="label">Total tagihan</p>
     <p class="total" id="total">Rp0</p>
     <dl>
@@ -88,7 +113,7 @@
     <button id="btnKembali" hidden>Kembali ke tagihan</button>
   </section>
 
-  <section id="salah" class="card hasil" hidden>
+  <section id="salah" class="card hasil muncul" hidden>
     <h1>Link tidak valid</h1>
     <p class="label">Scan ulang QR yang tampil di layar kasir.</p>
   </section>
@@ -117,8 +142,9 @@
   }
 
   // Kirim jawaban pelanggan ("LUNAS" atau "BATAL") ke perantara, dengan topik = kode tagihan
-  async function kirim(jawaban) {
+  async function kirim(jawaban, tombol) {
     $('btnYa').disabled = $('btnTidak').disabled = true;
+    tombol.classList.add('memproses');
     $('error').textContent = '';
     try {
       const res = await fetch(PERANTARA + '/' + kode, { method: 'POST', body: jawaban });
@@ -127,15 +153,20 @@
     } catch (e) {
       $('error').textContent = 'Gagal mengirim. Cek koneksi internet, lalu coba lagi.';
     } finally {
+      tombol.classList.remove('memproses');
       $('btnYa').disabled = $('btnTidak').disabled = false;
     }
   }
 
+  // Ikon hasil berupa garis SVG supaya bisa "digambar" oleh animasi CSS
+  const IKON_OK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const IKON_BATAL = '<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+
   function tampilkanHasil(lunas) {
     $('tagihan').hidden = true;
     $('hasil').hidden = false;
-    $('hasil').className = 'card hasil ' + (lunas ? 'ok' : 'batal');
-    $('ikon').textContent = lunas ? '✓' : '✕';
+    $('hasil').className = 'card hasil muncul ' + (lunas ? 'ok' : 'batal');
+    $('ikon').innerHTML = lunas ? IKON_OK : IKON_BATAL;
     $('judulHasil').textContent = lunas ? 'Pembayaran berhasil' : 'Pembayaran dibatalkan';
     $('teksHasil').textContent = lunas
       ? 'Terima kasih! Layar kasir akan ter-update dalam beberapa detik.'
@@ -143,8 +174,8 @@
     $('btnKembali').hidden = lunas;
   }
 
-  $('btnYa').onclick = () => kirim('LUNAS');
-  $('btnTidak').onclick = () => kirim('BATAL');
+  $('btnYa').onclick = () => kirim('LUNAS', $('btnYa'));
+  $('btnTidak').onclick = () => kirim('BATAL', $('btnTidak'));
   $('btnKembali').onclick = () => {
     $('hasil').hidden = true;
     $('tagihan').hidden = false;
