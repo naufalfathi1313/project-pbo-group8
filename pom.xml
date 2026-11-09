@@ -33,6 +33,12 @@
             <artifactId>flatlaf-fonts-inter</artifactId>
             <version>4.0</version>
         </dependency>
+        <!-- Membuat gambar QR code untuk pembayaran lewat HP -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.3</version>
+        </dependency>
         <!-- Untuk unit test perhitungan biaya -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

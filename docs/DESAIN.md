@@ -25,7 +25,8 @@ Perbedaan cara menghitung biaya inilah yang menjadi inti **polymorphism**: semua
 3. **Jadwal & Booking**: grid per jam (08:00–23:00) dengan status Tersedia / Dipilih / Dibooking / Dipakai / Tutup-Lewat. Kasir memilih beberapa jam berurutan pada satu fasilitas, melihat estimasi biaya, lalu konfirmasi.
 3b. **Walk-in**: pelanggan tanpa booking langsung main, timer langsung jalan.
 3c. **Tema gelap** ala gaming (library FlatLaf, warna navy `#0B0D1F` + aksen ungu `#7C4DFF`).
-4. **Sesi aktif + timer durasi**: menampilkan durasi berjalan (jam:menit:detik) dan biaya sementara secara live. Tombol **Selesai** menghentikan timer, menghitung total, dan mengembalikan status fasilitas ke Tersedia.
+4. **Sesi aktif + timer durasi**: menampilkan durasi berjalan (jam:menit:detik) dan biaya sementara secara live. Tombol **Selesai & Bayar** membekukan tagihan, lalu setelah dibayar menghitung total dan mengembalikan status fasilitas ke Tersedia.
+4b. **Bayar via QR (simulasi)**: dialog bayar menampilkan QR berisi link ke `web/bayar.html`. Pelanggan scan pakai HP dan menekan **Ya** atau **Tidak**; aplikasi mengecek jawabannya setiap 3 detik lewat perantara ntfy.sh dan langsung menyelesaikan sesi saat **Ya**. Tersedia juga tombol **Bayar Tunai**.
 5. **Rekap**: daftar transaksi per tanggal/periode, filter per jenis fasilitas, total pendapatan, dan fasilitas paling laris.
 6. **Kelola data**: tambah/ubah/hapus fasilitas dan pelanggan (CRUD).
 
@@ -39,6 +40,7 @@ Perbedaan cara menghitung biaya inilah yang menjadi inti **polymorphism**: semua
 | **Polymorphism** | `List<Fasilitas>` berisi campuran ketiga subclass; memanggil `f.hitungBiaya(menit)` otomatis memakai versi milik subclass-nya (*overriding*). |
 
 Materi lain yang ikut dipakai (sesuai PDF kuliah): `ArrayList`, Generics (`Dao<T>`), for-each, enum, exception handling.
+Tambahan dari fitur bayar QR: *method overloading* (`selesaikan(p)` dan `selesaikan(p, waktu)`), thread terpisah dengan `SwingWorker` supaya tampilan tidak macet, dan HTTP client bawaan Java (`java.net.http.HttpClient`).
 
 ## 4. Class Diagram
 
@@ -91,6 +93,7 @@ classDiagram
         -StatusPemesanan status
         +getDurasiMenit() long
         +getEstimasiBiaya() double
+        +biayaSampai(waktu) double
         +bentrokDengan(mulai, selesai) boolean
         +mulai()
         +selesaikan()
@@ -134,7 +137,8 @@ src/main/java/id/unsika/workspace/
 │   ├── PelangganDao.java
 │   └── PemesananDao.java
 ├── service/
-│   └── PemesananService.java    # logika mulai/selesai sesi, rekap
+│   ├── PemesananService.java    # logika mulai/selesai sesi, rekap
+│   └── PembayaranQr.java        # link QR + cek status bayar ke ntfy.sh
 └── ui/                          # Java Swing
     ├── LoginFrame.java
     ├── MainFrame.java           # menu samping + CardLayout
@@ -143,11 +147,16 @@ src/main/java/id/unsika/workspace/
     ├── PemesananPanel.java      # walk-in
     ├── PelangganPicker.java     # pilih / tambah pelanggan
     ├── SesiAktifPanel.java      # timer durasi
+    ├── DialogBayar.java         # tagihan + QR + bayar tunai
+    ├── PanelQr.java             # gambar QR (ZXing + Java2D)
     ├── Tema.java                # warna tema gelap
     ├── RekapPanel.java
     └── KelolaDataPanel.java
 database/
 └── workspace_db.sql             # buat tabel + data contoh
+web/
+├── index.html                   # halaman showcase (Vercel)
+└── bayar.html                   # halaman bayar yang dibuka HP pelanggan
 ```
 
 ## 6. Rancangan Database (MySQL)
@@ -171,8 +180,27 @@ Relasi: satu pelanggan → banyak pemesanan; satu fasilitas → banyak pemesanan
 1. Kasir login.
 2. Dashboard menampilkan semua fasilitas dan statusnya.
 3. Booking: tab **Jadwal & Booking** → klik slot hijau (misal PC-01 13:00–16:00) → pilih pelanggan → **Konfirmasi Booking**. Saat pelanggan datang, tab **Sesi Aktif** → **Check-in**. Pelanggan tanpa booking: tab **Walk-in** → **Mulai Sekarang**. Status fasilitas jadi merah (DIPAKAI) dan timer berjalan.
-4. Pelanggan selesai → klik **Selesai** → aplikasi menghitung biaya lewat `fasilitas.hitungBiaya(durasi)` → tampil struk → status kembali hijau.
+4. Pelanggan selesai → klik **Selesai & Bayar** → tagihan dibekukan lewat `pemesanan.biayaSampai(jamSelesai)` (di dalamnya memanggil `fasilitas.hitungBiaya(durasi)`) → pelanggan scan QR lalu menekan **Ya** di HP, atau bayar tunai → sesi selesai → tampil struk → status kembali hijau.
 5. Akhir hari → tab **Rekap** menampilkan total pendapatan.
+
+### Alur bayar via QR
+
+```mermaid
+sequenceDiagram
+    participant K as Aplikasi kasir (Java)
+    participant H as HP pelanggan (bayar.html)
+    participant N as ntfy.sh (perantara)
+    K->>K: Selesai & Bayar: bekukan tagihan, buat kode acak + QR
+    H->>H: Scan QR, halaman bayar terbuka
+    H->>N: POST /kode isi "LUNAS" (tombol Ya)
+    loop setiap 3 detik
+        K->>N: GET /kode/json?poll=1
+        N-->>K: pesan yang sudah masuk
+    end
+    K->>K: selesaikan(p, jamSelesai), struk, unit kembali Tersedia
+```
+
+Perantara dibutuhkan karena HP pelanggan tidak bisa menghubungi laptop kasir secara langsung lewat internet. Kode tagihan dibuat acak (`wsrent-` + 32 karakter) supaya tidak bisa ditebak orang lain.
 
 ## 8. Pembagian Tugas
 

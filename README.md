@@ -16,6 +16,7 @@ Tugas UAS **Pemrograman Berorientasi Objek (SYS61516)**, Fakultas Ilmu Komputer,
 | Jadwal & Booking | Grid jadwal per jam (Tersedia / Dipilih / Dibooking / Dipakai / Tutup-Lewat). Pilih beberapa jam berurutan, lihat estimasi biaya, lalu konfirmasi |
 | Walk-in | Pelanggan tanpa booking langsung main, timer langsung jalan |
 | Timer durasi | Tab Sesi Aktif: check-in booking, durasi dan biaya berjalan setiap detik, struk saat selesai |
+| Bayar via QR | Saat **Selesai & Bayar**, aplikasi menampilkan QR. Pelanggan scan pakai HP, menekan **Ya**, dan layar kasir ter-update sendiri. Bisa juga bayar tunai (simulasi, tanpa uang sungguhan) |
 | Rekap + grafik | Angka ringkasan, grafik pendapatan per hari & per jenis (Java2D, ada tooltip saat mouse di atas batang), dan tabel detail |
 | Kelola data | Tambah / ubah / hapus fasilitas dan pelanggan |
 | Tampilan | Tema gelap ala gaming (FlatLaf + font Inter), menu samping, kartu dengan sudut bulat |
@@ -38,10 +39,24 @@ Biaya akhir selalu dihitung dari **timer** (check-in sampai selesai). Jadwal boo
 
 Penjelasan lengkap ada di [docs/DESAIN.md](docs/DESAIN.md).
 
+## Bayar via QR (simulasi)
+
+![Dialog bayar dengan QR](docs/screenshots/7-Bayar_QR.png)
+
+1. Di **Sesi Aktif**, pilih sesi lalu klik **Selesai & Bayar**. Tagihan dibekukan (jam selesai = saat tombol diklik) dan QR muncul.
+2. Pelanggan scan QR dengan kamera HP. Halaman [`web/bayar.html`](web/bayar.html) di Vercel terbuka dan menampilkan tagihan yang sama.
+3. Pelanggan menekan **Ya, bayar sekarang** atau **Tidak**. Halaman mengirim jawabannya ke [ntfy.sh](https://ntfy.sh), layanan pesan gratis, dengan kode tagihan sebagai nama topik.
+4. Aplikasi menanyakan topik itu ke ntfy.sh setiap 3 detik (`PembayaranQr`). Begitu jawabannya **Ya**, sesi selesai, unit kembali Tersedia, dan struk muncul.
+
+![Halaman bayar di HP](docs/screenshots/8-Bayar_HP.png)
+
+Laptop kasir dan HP pelanggan butuh internet. Kalau internet mati, pakai tombol **Bayar Tunai**.
+Ini simulasi untuk tugas, tidak ada uang yang ditarik. Di bisnis sungguhan, bagian ini diganti payment gateway QRIS resmi.
+
 ## Download
 
 - **Aplikasi siap pakai:** unduh `workspace-rental.jar` di halaman [Releases](https://github.com/naufalfathi1313/project-pbo-group8/releases/latest), lalu jalankan `java -jar workspace-rental.jar` (MySQL tetap harus menyala dan database sudah di-import, lihat langkah 2 di bawah).
-- **Halaman showcase:** folder [`web/`](web/) berisi halaman statis untuk Vercel. Di Vercel, set **Root Directory = `web`** dan **Framework Preset = Other**.
+- **Halaman showcase:** folder [`web/`](web/) berisi halaman statis untuk Vercel (`index.html` untuk showcase, `bayar.html` untuk halaman bayar QR). Di Vercel, set **Root Directory = `web`** dan **Framework Preset = Other**.
 
 ## Cara Menjalankan
 
@@ -83,7 +98,7 @@ Hasilnya `target/workspace-rental.jar`, satu file berisi semua library.
 ```bash
 mvn test
 ```
-Test di `src/test` membuktikan perhitungan biaya tiap jenis fasilitas dan siklus pemesanan.
+Test di `src/test` membuktikan perhitungan biaya tiap jenis fasilitas, tagihan yang dibekukan saat bayar, dan cara aplikasi membaca jawaban dari HP pelanggan.
 
 ## Struktur Folder
 
@@ -93,9 +108,10 @@ src/main/java/id/unsika/workspace/
 ├── model/              class OOP: Fasilitas, MejaDesk, MeetingRoom, PCGaming, Pelanggan, Pemesanan
 ├── db/Koneksi.java     koneksi MySQL (Singleton)
 ├── dao/                akses database (interface generik Dao<T>)
-├── service/            logika pemesanan: pesan, check-in, selesai, batal
-├── ui/                 tampilan Java Swing (Login, Dashboard, Jadwal, Walk-in, Sesi Aktif, Rekap, Kelola Data, Tema)
+├── service/            logika pemesanan (pesan, check-in, selesai, batal) + PembayaranQr (cek status bayar QR)
+├── ui/                 tampilan Java Swing (Login, Dashboard, Jadwal, Walk-in, Sesi Aktif, Dialog Bayar + QR, Rekap, Kelola Data, Tema)
 └── util/Format.java    format Rupiah, durasi, tanggal
 database/workspace_db.sql   struktur tabel + data contoh
 docs/                       desain dan screenshot
+web/                        showcase + halaman bayar QR (Vercel)
 ```
