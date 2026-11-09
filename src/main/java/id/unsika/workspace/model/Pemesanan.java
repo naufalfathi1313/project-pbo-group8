@@ -108,21 +108,38 @@ public class Pemesanan {
         if (waktuMulai == null) {
             return 0;
         }
-        LocalDateTime akhir = (waktuSelesai != null) ? waktuSelesai : LocalDateTime.now();
+        return durasiDetikSampai(waktuSelesai != null ? waktuSelesai : LocalDateTime.now());
+    }
+
+    /** Lama pemakaian dari waktu mulai sampai waktu tertentu, dalam detik. */
+    public long durasiDetikSampai(LocalDateTime akhir) {
         return Math.max(0, Duration.between(waktuMulai, akhir).getSeconds());
     }
 
-    /** Lama pemakaian dalam menit, dibulatkan ke atas (61 detik = 2 menit), minimal 1 menit. */
+    /** Lama pemakaian dalam menit, dibulatkan ke atas, minimal 1 menit. */
     public long getDurasiMenit() {
         if (waktuMulai == null) {
             return 0;
         }
-        return Math.max(1, (getDurasiDetik() + 59) / 60);
+        return keMenit(getDurasiDetik());
     }
 
     /** Biaya jika sesi dihentikan sekarang, untuk ditampilkan live di tab Sesi Aktif. */
     public double getBiayaSementara() {
         return fasilitas.hitungBiaya(getDurasiMenit());
+    }
+
+    /**
+     * Biaya jika sesi dihentikan pada waktu tertentu, tanpa mengubah status.
+     * Dipakai dialog pembayaran: tagihan "dibekukan" saat kasir menekan Selesai & Bayar.
+     */
+    public double biayaSampai(LocalDateTime akhir) {
+        return fasilitas.hitungBiaya(keMenit(durasiDetikSampai(akhir)));
+    }
+
+    /** 61 detik dihitung 2 menit (dibulatkan ke atas), minimal 1 menit. */
+    private static long keMenit(long detik) {
+        return Math.max(1, (detik + 59) / 60);
     }
 
     public int getId() {

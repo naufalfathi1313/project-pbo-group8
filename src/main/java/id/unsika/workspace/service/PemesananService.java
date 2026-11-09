@@ -69,7 +69,12 @@ public class PemesananService {
 
     /** Sesi selesai: biaya dihitung oleh fasilitas (polymorphism), status kembali TERSEDIA. */
     public void selesaikan(Pemesanan p) throws SQLException {
-        p.selesaikan(LocalDateTime.now());
+        selesaikan(p, LocalDateTime.now());
+    }
+
+    /** OVERLOADING: versi dengan jam selesai tertentu, dipakai saat tagihan sudah dibekukan di dialog pembayaran. */
+    public void selesaikan(Pemesanan p, LocalDateTime waktuSelesai) throws SQLException {
+        p.selesaikan(waktuSelesai);
         simpan(p);
     }
 

@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 import java.awt.BorderLayout;
@@ -116,11 +117,11 @@ public class SesiAktifPanel extends JPanel implements Refreshable {
             switch (aksi) {
                 case CHECK_IN -> service.checkIn(p);
                 case SELESAI -> {
-                    if (!Pesan.konfirmasi(this, "Selesaikan sesi " + p.getFasilitas().getKode() + "?")) {
-                        return;
+                    DialogBayar dialog = new DialogBayar(SwingUtilities.getWindowAncestor(this), p, service);
+                    dialog.setVisible(true); // dialog modal: baris berikutnya menunggu sampai dialog ditutup
+                    if (dialog.getMetode() != null) {
+                        tampilkanStruk(p, dialog.getMetode());
                     }
-                    service.selesaikan(p);
-                    tampilkanStruk(p);
                 }
                 case BATAL -> {
                     if (!Pesan.konfirmasi(this, "Batalkan booking " + p.getFasilitas().getKode() + "?")) {
@@ -135,7 +136,7 @@ public class SesiAktifPanel extends JPanel implements Refreshable {
         refresh();
     }
 
-    private void tampilkanStruk(Pemesanan p) {
+    private void tampilkanStruk(Pemesanan p, String metode) {
         Pesan.info(this, "===== STRUK SEWA =====\n"
                 + "Pelanggan : " + p.getPelanggan().getNama() + "\n"
                 + "Fasilitas : " + p.getFasilitas() + "\n"
@@ -143,7 +144,8 @@ public class SesiAktifPanel extends JPanel implements Refreshable {
                 + "Mulai     : " + Format.waktu(p.getWaktuMulai()) + "\n"
                 + "Selesai   : " + Format.waktu(p.getWaktuSelesai()) + "\n"
                 + "Durasi    : " + Format.durasi(p.getDurasiDetik()) + "\n"
-                + "TOTAL     : " + Format.rupiah(p.getTotalBiaya()));
+                + "TOTAL     : " + Format.rupiah(p.getTotalBiaya()) + "\n"
+                + "Dibayar   : " + metode);
     }
 
     /** Model tabel: menjembatani List<Pemesanan> dengan JTable. */
