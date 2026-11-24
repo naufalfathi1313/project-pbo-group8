@@ -3,11 +3,14 @@ package id.unsika.workspace.ui;
 import id.unsika.workspace.dao.PemesananDao;
 import id.unsika.workspace.model.Pemesanan;
 import id.unsika.workspace.model.StatusPemesanan;
+import id.unsika.workspace.service.PembayaranQr;
 import id.unsika.workspace.service.PemesananService;
+import id.unsika.workspace.service.Struk;
 import id.unsika.workspace.util.Format;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -16,7 +19,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
+import java.io.File;
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +123,10 @@ public class SesiAktifPanel extends JPanel implements Refreshable {
             switch (aksi) {
                 case CHECK_IN -> service.checkIn(p);
                 case SELESAI -> {
+                    if (!PembayaranQr.adaInternet()) {
+                        Pesan.info(this, "Laptop tidak terhubung ke internet / WiFi.\n"
+                                + "QR tidak bisa dipakai pelanggan. Sambungkan internet dulu, atau pilih Bayar Tunai.");
+                    }
                     DialogBayar dialog = new DialogBayar(SwingUtilities.getWindowAncestor(this), p, service);
                     dialog.setVisible(true); // dialog modal: baris berikutnya menunggu sampai dialog ditutup
                     if (dialog.getMetode() != null) {
@@ -136,16 +146,31 @@ public class SesiAktifPanel extends JPanel implements Refreshable {
         refresh();
     }
 
+    /** Menampilkan struk, dengan pilihan mengirimnya ke WhatsApp pelanggan. */
     private void tampilkanStruk(Pemesanan p, String metode) {
-        Pesan.info(this, "===== STRUK SEWA =====\n"
-                + "Pelanggan : " + p.getPelanggan().getNama() + "\n"
-                + "Fasilitas : " + p.getFasilitas() + "\n"
-                + "Tarif     : " + Format.rupiah(p.getFasilitas().getTarifPerJam()) + " / jam\n"
-                + "Mulai     : " + Format.waktu(p.getWaktuMulai()) + "\n"
-                + "Selesai   : " + Format.waktu(p.getWaktuSelesai()) + "\n"
-                + "Durasi    : " + Format.durasi(p.getDurasiDetik()) + "\n"
-                + "TOTAL     : " + Format.rupiah(p.getTotalBiaya()) + "\n"
-                + "Dibayar   : " + metode);
+        String teks = Struk.teks(p, metode);
+        Object[] pilihan = {"Kirim ke WhatsApp", "Tutup"};
+        int jawab = JOptionPane.showOptionDialog(this, teks, "Struk", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE, null, pilihan, pilihan[1]);
+        if (jawab == 0) {
+            kirimWa(p, metode, teks);
+        }
+    }
+
+    /**
+     * Simpan struk PDF, buka chat WhatsApp pelanggan (isi struk sudah terketik), lalu buka folder PDF-nya.
+     * wa.me tidak bisa melampirkan file, jadi PDF dilampirkan kasir sendiri dari folder itu.
+     */
+    private void kirimWa(Pemesanan p, String metode, String teks) {
+        try {
+            File pdf = Struk.simpanPdf(p, metode);
+            Desktop.getDesktop().browse(URI.create(Struk.linkWa(p.getPelanggan().getNoHp(), teks)));
+            Desktop.getDesktop().open(Struk.FOLDER);
+            Pesan.info(this, "Chat WhatsApp " + p.getPelanggan().getNama() + " sudah dibuka.\n"
+                    + "Lampirkan file " + pdf.getName() + " dari folder yang terbuka, lalu kirim.");
+        } catch (Exception ex) {
+            Pesan.error(this, ex);
+        }
     }
 
     /** Model tabel: menjembatani List<Pemesanan> dengan JTable. */

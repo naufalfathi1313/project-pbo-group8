@@ -10,20 +10,47 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
 
-/** Komponen kecil: ComboBox pelanggan + tombol untuk menambah pelanggan baru. Dipakai di dua tab. */
+/**
+ * Komponen kecil: kolom cari + ComboBox pelanggan + tombol untuk menambah pelanggan baru. Dipakai di dua tab.
+ * Mengetik di kolom cari menyaring isi ComboBox berdasarkan nama atau nomor HP.
+ */
 class PelangganPicker extends JPanel {
 
     private final PelangganDao dao = new PelangganDao();
     private final JComboBox<Pelanggan> combo = new JComboBox<>();
+    private final JTextField txtCari = new JTextField(12);
+    private List<Pelanggan> semua = new ArrayList<>(); // daftar lengkap dari database
 
     PelangganPicker() {
         super(new BorderLayout(6, 0));
         setOpaque(false);
+        txtCari.putClientProperty("JTextField.placeholderText", "Cari nama / no HP");
+        txtCari.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                saring();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                saring();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                saring();
+            }
+        });
         JButton btnBaru = new JButton("+ Pelanggan Baru");
         btnBaru.addActionListener(e -> tambah());
+        add(txtCari, BorderLayout.WEST);
         add(combo, BorderLayout.CENTER);
         add(btnBaru, BorderLayout.EAST);
     }
@@ -36,13 +63,26 @@ class PelangganPicker extends JPanel {
     void muat() {
         try {
             Pelanggan lama = getTerpilih();
-            combo.setModel(new DefaultComboBoxModel<>(dao.semua().toArray(new Pelanggan[0])));
+            semua = dao.semua();
+            saring();
             if (lama != null) {
                 pilih(lama.getId());
             }
         } catch (Exception ex) {
             Pesan.error(this, ex);
         }
+    }
+
+    /** Isi ComboBox hanya dengan pelanggan yang nama atau no HP-nya mengandung kata yang diketik. */
+    private void saring() {
+        String kata = txtCari.getText().trim().toLowerCase();
+        List<Pelanggan> cocok = new ArrayList<>();
+        for (Pelanggan p : semua) {
+            if (p.getNama().toLowerCase().contains(kata) || p.getNoHp().contains(kata)) {
+                cocok.add(p);
+            }
+        }
+        combo.setModel(new DefaultComboBoxModel<>(cocok.toArray(new Pelanggan[0])));
     }
 
     private void pilih(int id) {
@@ -68,6 +108,7 @@ class PelangganPicker extends JPanel {
         try {
             Pelanggan p = new Pelanggan(0, txtNama.getText(), txtHp.getText());
             dao.simpan(p);
+            txtCari.setText(""); // kosongkan pencarian supaya pelanggan baru pasti terlihat
             muat();
             pilih(p.getId());
         } catch (Exception ex) {

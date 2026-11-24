@@ -64,6 +64,20 @@ public class PembayaranQr {
         return bacaStatus(jawaban.body());
     }
 
+    /** Cek cepat (maks. 3 detik) apakah laptop bisa menghubungi server pembayaran lewat internet. */
+    public static boolean adaInternet() {
+        try {
+            HttpRequest permintaan = HttpRequest.newBuilder(URI.create(PERANTARA))
+                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                    .timeout(Duration.ofSeconds(3))
+                    .build();
+            HTTP.send(permintaan, HttpResponse.BodyHandlers.discarding());
+            return true;
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
+    }
+
     /**
      * Membaca jawaban ntfy.sh: satu baris JSON untuk setiap pesan, contohnya
      * {"id":"x1","time":1700000000,"event":"message","topic":"wsrent-...","message":"LUNAS"}.
