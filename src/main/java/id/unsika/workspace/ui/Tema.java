@@ -9,6 +9,9 @@ import javax.swing.JLabel;
 import javax.swing.UIManager;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.Taskbar;
+import java.awt.Toolkit;
 import java.util.Map;
 
 /** Semua warna dan gaya teks aplikasi di satu tempat, supaya tema gelap konsisten di setiap layar. */
@@ -38,7 +41,14 @@ public final class Tema {
     }
 
     /** Dipanggil sekali di App.main sebelum jendela pertama dibuat. */
+    /** Ikon aplikasi (src/main/resources/ikon.png). Ganti file itu untuk mengganti ikon. */
+    public static final Image IKON = Toolkit.getDefaultToolkit().getImage(Tema.class.getResource("/ikon.png"));
+
     public static void pasang() {
+        // Ikon di Dock (Mac) / taskbar. Ikon di pojok jendela dipasang di LoginFrame & MainFrame.
+        if (Taskbar.isTaskbarSupported() && Taskbar.getTaskbar().isSupported(Taskbar.Feature.ICON_IMAGE)) {
+            Taskbar.getTaskbar().setIconImage(IKON);
+        }
         FlatInterFont.install();
         FlatLaf.setPreferredFontFamily(FlatInterFont.FAMILY);
         FlatLaf.setGlobalExtraDefaults(Map.of(

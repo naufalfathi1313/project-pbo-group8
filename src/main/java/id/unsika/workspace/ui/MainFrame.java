@@ -48,6 +48,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame(String namaUser) {
         super("Working Space & Rental PC Gaming");
+        setIconImage(Tema.IKON);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1180, 720));
 
