@@ -26,6 +26,7 @@ public class LoginFrame extends JFrame {
 
     public LoginFrame() {
         super("Login - Working Space & Rental PC Gaming");
+        setIconImage(Tema.IKON);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         txtUsername.putClientProperty("JTextField.placeholderText", "admin");
